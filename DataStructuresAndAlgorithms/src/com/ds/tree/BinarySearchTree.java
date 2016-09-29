@@ -1,5 +1,7 @@
 package com.ds.tree;
 
+import java.util.Stack;
+
 public class BinarySearchTree {
 
 	private Node root;
@@ -69,7 +71,7 @@ public class BinarySearchTree {
 		}
 		
 		//if node is found
-		if(current.getData()==data){
+		if(current!=null && current.getData()==data){
 				System.out.println("node found!");
 				//Node to be deleted is leaf node
 				if(current.getLeft()==null && current.getRight()==null){
@@ -109,7 +111,6 @@ public class BinarySearchTree {
 					}else{
 						//node to be deleted has two children
 						//find largest node from left child or smallest node from right child
-						Node replaceNode = new Node();
 						
 						Node temp = current.getRight();
 						Node tempParent = null;
@@ -138,10 +139,17 @@ public class BinarySearchTree {
 						//temp : node that will replace the node to be deleted.
 						temp.setLeft(current.getLeft());
 						temp.setRight(current.getRight());
-						if(parent.getLeft()==current){
-							parent.setLeft(temp);
+						if(parent!=null){
+							if(parent.getLeft()==current){
+								parent.setLeft(temp);
+							}else{
+								parent.setRight(temp);
+							}
 						}else{
-							parent.setRight(temp);
+							current.setLeft(null);
+							current.setRight(null);
+							current=null;
+							root=temp;
 						}
 					}
 				}
@@ -155,8 +163,97 @@ public class BinarySearchTree {
 	public void inorder(Node root){
 		if(root!=null){
 			inorder(root.getLeft());
-			System.out.println(root.getData() + "\t");
+			System.out.print(root.getData() + "\t");
 			inorder(root.getRight());
+		}
+	}
+	
+	public void preorder(Node root){
+		if(root!=null){
+			System.out.print(root.getData() + "\t");
+			preorder(root.getLeft());
+			preorder(root.getRight());			
+		}
+	}
+	
+	public void postorder(Node root){
+		if(root!=null){
+			postorder(root.getLeft());
+			postorder(root.getRight());
+			System.out.print(root.getData() + "\t");
+		}
+	}
+	
+	public void inorderIterative(){
+		if(root!=null){
+			Stack<Node> s = new Stack<>();
+			Node temp = root;
+			s.push(temp);
+			temp = temp.getLeft();
+			while(!s.isEmpty()){
+				
+				while(temp!=null){
+					s.push(temp);
+					temp = temp.getLeft();				
+					
+				}
+				
+				temp = s.pop();
+				System.out.print(temp.getData() + "\t");
+				temp = temp.getRight();
+				
+				if(temp!=null && s.isEmpty()){ 
+					s.push(temp);
+					temp = temp.getLeft();
+				}
+			} 
+		}
+	}
+	
+	public void preorderIterative(){
+		if(root!=null){
+			Stack<Node> s = new Stack<>();
+			Node temp = root;
+			s.push(temp);
+			while(!s.isEmpty()){
+				
+				temp = s.pop();	
+				System.out.print(temp.getData() + "\t");
+				if(temp.getRight()!=null){
+					s.push(temp.getRight());
+				}
+				if(temp.getLeft()!=null){
+					s.push(temp.getLeft());
+				}
+			}
+		}
+	}
+	
+	public void postorderIterative(){
+		if(root!=null){
+			Stack<Node> s = new Stack<>();
+			
+			Node temp = root;
+			
+			do{
+				while(temp!=null){
+					s.push(temp);
+					temp = temp.getLeft();
+				}
+				
+				if(s.peek().getRight()!=null){
+					temp = s.peek().getRight();
+					continue;
+				}else{
+					temp = s.pop();
+					System.out.println(temp.getData());
+					while(!s.isEmpty() && temp==s.peek().getRight()){
+						temp = s.pop();
+						System.out.println(temp.getData());						
+					}
+					temp=null;
+				}
+			}while(!s.isEmpty());
 		}
 	}
 }
